@@ -1,19 +1,14 @@
-language: python
-
 sudo: false
 
-python: 3.5
+dist: xenial
 
-env:
-    matrix:
-      - TOXENV=py27
-      - TOXENV=py33
-      - TOXENV=py34
-      - TOXENV=py35
-      - TOXENV=flake8
+language: python
 
-script:
-  - make test
+python:
+  - "3.6"
+  - "3.8"
+  - "3.9a"
 
-install:
-  - travis_retry pip install tox
+install: pip install tox-travis
+
+script: tox
