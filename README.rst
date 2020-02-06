@@ -1,10 +1,7 @@
 Django-Cache-URL
 ~~~~~~~~~~~~~~~~
 
-|BUILD|_
-.. |BUILD| image::
-   https://api.travis-ci.org/epicserve/django-cache-url.svg?branch=master
-.. _BUILD: https://travis-ci.org/epicserve/django-cache-url
+[![Build Status](https://travis-ci.org/epicserve/django-cache-url.svg?branch=master)](https://travis-ci.org/epicserve/django-cache-url)
 
 This simple Django utility allows you to utilize the
 `12factor <http://www.12factor.net/backing-services>`_ inspired
