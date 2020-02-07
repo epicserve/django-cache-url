@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+v3.1.0
+------
+
+- Bring the project back into active status, so it can be used with `environs <https://github.com/sloria/environs>`_.
+- Drop support for Python less than 3.8.
+
 v3.0.0
 ------
 
