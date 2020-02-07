@@ -9,8 +9,8 @@ help:
 	@echo ''
 
 release:
-	rm -rf dist/*
-	python setup.py register bdist_wheel sdist
+	rm -rf build dist
+	python setup.py sdist bdist_wheel
 	twine upload dist/*
 
 test:
