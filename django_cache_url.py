@@ -86,7 +86,7 @@ def parse(url):
                 path = path[:path.rfind('/')]
             else:
                 db = '0'
-            config['LOCATION'] = 'unix:%s:%s' % (path, db)
+            config['LOCATION'] = 'unix:%s?db=%s' % (path, db)
         else:
             config['LOCATION'] = path
     # URL based
