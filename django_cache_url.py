@@ -19,7 +19,9 @@ urlparse.uses_netloc.append('elasticache')
 urlparse.uses_netloc.append('djangopylibmc')
 urlparse.uses_netloc.append('pymemcached')
 urlparse.uses_netloc.append('redis')
+urlparse.uses_netloc.append('rediss')
 urlparse.uses_netloc.append('hiredis')
+urlparse.uses_netloc.append('hirediss')
 
 DEFAULT_ENV = 'CACHE_URL'
 
@@ -34,7 +36,9 @@ BACKENDS = {
     'djangopylibmc': 'django_pylibmc.memcached.PyLibMCCache',
     'pymemcached': 'django.core.cache.backends.memcached.MemcachedCache',
     'redis': 'django_redis.cache.RedisCache',
+    'rediss': 'django_redis.cache.RedisCache',
     'hiredis': 'django_redis.cache.RedisCache',
+    'hirediss': 'django_redis.cache.RedisCache',
 }
 
 
@@ -71,7 +75,7 @@ def parse(url):
     config['BACKEND'] = BACKENDS[url.scheme]
 
     redis_options = {}
-    if url.scheme == 'hiredis':
+    if url.scheme in ('hiredis', 'hirediss'):
         redis_options['PARSER_CLASS'] = 'redis.connection.HiredisParser'
 
     # File based
@@ -94,13 +98,14 @@ def parse(url):
         # Handle multiple hosts
         config['LOCATION'] = ';'.join(url.netloc.split(','))
 
-        if url.scheme in ('redis', 'hiredis'):
+        if url.scheme in ('redis', 'hiredis', 'rediss', 'hirediss'):
             if url.password:
                 redis_options['PASSWORD'] = url.password
             # Specifying the database is optional, use db 0 if not specified.
             db = path[1:] or '0'
             port = url.port if url.port else 6379
-            config['LOCATION'] = "redis://%s:%s/%s" % (url.hostname, port, db)
+            ssl = url.scheme in ('rediss', 'hirediss')
+            config['LOCATION'] = "redis%s://%s:%s/%s" % ('s' if ssl else '', url.hostname, port, db)
 
     if redis_options:
         config.setdefault('OPTIONS', {}).update(redis_options)
