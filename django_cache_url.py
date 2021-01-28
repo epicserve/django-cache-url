@@ -74,6 +74,11 @@ def parse(url):
     if url.scheme == 'hiredis':
         redis_options['PARSER_CLASS'] = 'redis.connection.HiredisParser'
 
+    for key in ['CLIENT_CLASS', 'IGNORE_EXCEPTIONS']:
+        val = cache_args.pop(key, None)
+        if val is not None:
+            redis_options[key] = val
+
     # File based
     if not url.netloc:
         if url.scheme in ('memcached', 'pymemcached', 'djangopylibmc'):
