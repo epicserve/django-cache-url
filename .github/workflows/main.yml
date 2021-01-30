@@ -28,7 +28,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
       - run: |
-          pip install pytest coverage
-          coverage run -m pytest tests --strict
-          coverage report --include=django_cache_url.py
-          coverage html --include=django_cache_url.py
+          pip install pytest coverage pytest-cov
+          export PYTHONPATH=`pwd`:$PYTHONPATH
+          pytest
