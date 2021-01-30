@@ -22,7 +22,7 @@ urlparse.uses_netloc.append('redis')
 urlparse.uses_netloc.append('hiredis')
 
 DEFAULT_ENV = 'CACHE_URL'
-DJANGO_REDIS_CACHE = 'dj-redis-cache'
+DJANGO_REDIS_CACHE = 'redis-cache'
 
 BACKENDS = {
     'db': 'django.core.cache.backends.db.DatabaseCache',

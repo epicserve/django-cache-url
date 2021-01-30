@@ -1,8 +1,10 @@
 import django_cache_url
 
+redis_cache = django_cache_url.DJANGO_REDIS_CACHE
+
 
 def test_basic_config():
-    url = 'redis://127.0.0.1:6379/?lib=dj-redis-cache'
+    url = f'redis://127.0.0.1:6379/?lib={redis_cache}'
     config = django_cache_url.parse(url)
 
     assert config['BACKEND'] == 'redis_cache.RedisCache'
@@ -16,7 +18,7 @@ def test_advanced_config():
         'max_connections=50',
         'timeout=20',
     ]
-    url = f'redis://:mypassword@127.0.0.1:6379/1?lib=dj-redis-cache&{"&".join(extra_params)}'
+    url = f'redis://:mypassword@127.0.0.1:6379/1?lib={redis_cache}&{"&".join(extra_params)}'
     config = django_cache_url.parse(url)
 
     assert config['BACKEND'] == 'redis_cache.RedisCache'
@@ -27,7 +29,7 @@ def test_advanced_config():
 
 
 def test_basic_config_with_db():
-    url = 'redis://127.0.0.1:6379/1?lib=dj-redis-cache'
+    url = f'redis://127.0.0.1:6379/1?lib={redis_cache}'
     config = django_cache_url.parse(url)
 
     assert config['BACKEND'] == 'redis_cache.RedisCache'
@@ -35,7 +37,7 @@ def test_basic_config_with_db():
 
 
 def test_basic_config_with_password():
-    url = 'redis://:mypassword@127.0.0.1:6379/?lib=dj-redis-cache'
+    url = f'redis://:mypassword@127.0.0.1:6379/?lib={redis_cache}'
     config = django_cache_url.parse(url)
 
     assert config['BACKEND'] == 'redis_cache.RedisCache'
@@ -43,7 +45,7 @@ def test_basic_config_with_password():
 
 
 def test_basic_config_with_parser_class():
-    url = 'redis://127.0.0.1:6379/?lib=dj-redis-cache&parser_class=redis.connection.HiredisParser'
+    url = f'redis://127.0.0.1:6379/?lib={redis_cache}&parser_class=redis.connection.HiredisParser'
     config = django_cache_url.parse(url)
 
     assert config['BACKEND'] == 'redis_cache.RedisCache'
@@ -52,7 +54,7 @@ def test_basic_config_with_parser_class():
 
 
 def test_basic_config_with_connection_pool_class():
-    url = 'redis://127.0.0.1:6379/?lib=dj-redis-cache&connection_pool_class=redis.BlockingConnectionPool'
+    url = f'redis://127.0.0.1:6379/?lib={redis_cache}&connection_pool_class=redis.BlockingConnectionPool'
     config = django_cache_url.parse(url)
 
     assert config['BACKEND'] == 'redis_cache.RedisCache'
@@ -63,26 +65,26 @@ def test_basic_config_with_connection_pool_class():
 def test_basic_config_with_connection_pool_class_kwargs():
 
     # both max_connections and timeout
-    url = 'redis://127.0.0.1:6379/?lib=dj-redis-cache&max_connections=50&timeout=20'
+    url = f'redis://127.0.0.1:6379/?lib={redis_cache}&max_connections=50&timeout=20'
     config = django_cache_url.parse(url)
     assert config['OPTIONS']['CONNECTION_POOL_CLASS_KWARGS']['max_connections'] == 50
     assert config['OPTIONS']['CONNECTION_POOL_CLASS_KWARGS']['timeout'] == 20
 
     # just max_connections
-    url = 'redis://127.0.0.1:6379/?lib=dj-redis-cache&max_connections=10'
+    url = f'redis://127.0.0.1:6379/?lib={redis_cache}&max_connections=10'
     config = django_cache_url.parse(url)
     assert config['OPTIONS']['CONNECTION_POOL_CLASS_KWARGS']['max_connections'] == 10
     assert 'timeout' not in config['OPTIONS']['CONNECTION_POOL_CLASS_KWARGS']
 
     # just timeout
-    url = 'redis://127.0.0.1:6379/?lib=dj-redis-cache&timeout=10'
+    url = f'redis://127.0.0.1:6379/?lib={redis_cache}&timeout=10'
     config = django_cache_url.parse(url)
     assert config['OPTIONS']['CONNECTION_POOL_CLASS_KWARGS']['timeout'] == 10
     assert 'max_connections' not in config['OPTIONS']['CONNECTION_POOL_CLASS_KWARGS']
 
 
 def test_rediss_config_with_db():
-    url = 'rediss://127.0.0.1:6379/1?lib=dj-redis-cache'
+    url = f'rediss://127.0.0.1:6379/1?lib={redis_cache}'
     config = django_cache_url.parse(url)
 
     assert config['BACKEND'] == 'redis_cache.RedisCache'
@@ -90,7 +92,7 @@ def test_rediss_config_with_db():
 
 
 def test_rediss_config():
-    url = 'rediss://127.0.0.1:6379/?lib=dj-redis-cache'
+    url = f'rediss://127.0.0.1:6379/?lib={redis_cache}'
     config = django_cache_url.parse(url)
 
     assert config['BACKEND'] == 'redis_cache.RedisCache'
@@ -98,7 +100,7 @@ def test_rediss_config():
 
 
 def test_rediss_config_with_password():
-    url = 'rediss://:mypassword@127.0.0.1:6379/?lib=dj-redis-cache'
+    url = f'rediss://:mypassword@127.0.0.1:6379/?lib={redis_cache}'
     config = django_cache_url.parse(url)
 
     assert config['BACKEND'] == 'redis_cache.RedisCache'
