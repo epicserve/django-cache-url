@@ -13,7 +13,8 @@ jobs:
           python-version: '3.9'
       - run: |
           pip install flake8
-          flake8 django_cache_url.py tests --max-line-length=100
+          export PYTHONPATH=`pwd`:$PYTHONPATH
+          flake8
   test:
     runs-on: ubuntu-latest
     strategy:
