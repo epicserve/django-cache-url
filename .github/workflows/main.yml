@@ -1,0 +1,15 @@
+name: CI
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - run: |
+          pip install flake8
+          flake8 django_cache_url.py tests --max-line-length=100
