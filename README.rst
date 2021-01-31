@@ -10,7 +10,7 @@ django-cache-url
    :alt: Supported Python versions
    :target: https://pypi.org/project/django-cache-url/
 
-.. image:: https://github.com/epicserve/django-cache-url/workflows/Tests/badge.svg?branch=master
+.. image:: https://github.com/epicserve/django-cache-url/workflows/CI/badge.svg?branch=master
    :target: https://github.com/epicserve/django-cache-url/actions
    :alt: Tests
 
