@@ -1,8 +1,18 @@
-Django-Cache-URL
-~~~~~~~~~~~~~~~~
+================
+django-cache-url
+================
 
-.. image:: https://travis-ci.org/epicserve/django-cache-url.svg?branch=master
-    :target: https://travis-ci.org/epicserve/django-cache-url
+.. image:: https://img.shields.io/pypi/v/django-cache-url.svg
+    :alt: PyPI version
+    :target: https://pypi.org/project/django-cache-url/
+
+.. image:: https://img.shields.io/pypi/pyversions/django-cache-url.svg
+   :alt: Supported Python versions
+   :target: https://pypi.org/project/django-cache-url/
+
+.. image:: https://github.com/epicserve/django-cache-url/workflows/Tests/badge.svg?branch=master
+   :target: https://github.com/epicserve/django-cache-url/actions
+   :alt: Tests
 
 This simple Django utility allows you to utilize the
 `12factor <http://www.12factor.net/backing-services>`_ inspired
