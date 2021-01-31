@@ -22,14 +22,14 @@ from setuptools import setup
 
 setup(
     name='django-cache-url',
-    version='3.2.1',
+    version='3.2.2',
     url='https://github.com/epicserve/django-cache-url',
     license='MIT',
     author="Brent O'Connor",
     author_email='epicserve@gmail.com',
     description='Use Cache URLs in your Django application.',
     long_description=__doc__,
-    py_modules=('django_cache_url',),
+    packages=('django_cache_url',),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Framework :: Django',
