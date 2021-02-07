@@ -83,6 +83,9 @@ def parse(url):
         if url.scheme in ('memcached', 'pymemcached', 'djangopylibmc'):
             config['LOCATION'] = 'unix:' + path
 
+        elif url.scheme == "file":
+            config['LOCATION'] = path[1:]
+
         elif url.scheme in ('redis', 'hiredis'):
             match = re.match(r'.+?(?P<db>\d+)', path)
             if match:
