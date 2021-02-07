@@ -25,11 +25,18 @@ def test_dummy_url_returns_dummy_cache():
     assert config['BACKEND'] == 'django.core.cache.backends.dummy.DummyCache'
 
 
-def test_file_url_returns_file_cache_backend():
-    config = django_cache_url.parse('file:///herp')
+def test_file_url_returns_file_cache_backend_relative():
+    config = django_cache_url.parse('file:///herp/bar')
 
     assert config['BACKEND'] == 'django.core.cache.backends.filebased.FileBasedCache'
-    assert config['LOCATION'] == '/herp'
+    assert config['LOCATION'] == 'herp/bar'
+
+
+def test_file_url_returns_file_cache_backend_absolute():
+    config = django_cache_url.parse('file:////var/herp')
+
+    assert config['BACKEND'] == 'django.core.cache.backends.filebased.FileBasedCache'
+    assert config['LOCATION'] == '/var/herp'
 
 
 def test_locmem_url_returns_locmem_cache():
