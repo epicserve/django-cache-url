@@ -4,14 +4,16 @@ help:
 	@echo 'Makefile for django-cache-url'
 	@echo ''
 	@echo 'Usage:'
-	@echo '   make release      push to the PyPI'
-	@echo '   make test         run the test suite'
+	@echo '   make release      Make a puush a new release to PyPI'
+	@echo '   make test         Run the test suite'
+	@echo '   make lint         Run linting on the code'
 	@echo ''
 
 release:
-	rm -rf build dist
-	python setup.py sdist bdist_wheel
-	twine upload dist/*
+	@./scripts/create_release.py
 
 test:
-	tox
+	@pytest
+
+lint:
+	@flake8
