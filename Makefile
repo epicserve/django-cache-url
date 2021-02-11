@@ -10,7 +10,7 @@ help:
 	@echo ''
 
 release:
-	@./scripts/create_release.py
+	@./scripts/create_release.py --push --publish
 
 test:
 	@pytest
