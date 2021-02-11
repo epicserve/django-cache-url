@@ -105,3 +105,30 @@ def test_rediss_config_with_password():
 
     assert config['BACKEND'] == 'redis_cache.RedisCache'
     assert config['LOCATION'] == 'rediss://:mypassword@127.0.0.1:6379/0'
+
+
+def test_hiredis_config_with_db():
+    url = f'hiredis://127.0.0.1:6379/1?lib={redis_cache}'
+    config = django_cache_url.parse(url)
+
+    assert config['BACKEND'] == 'redis_cache.RedisCache'
+    assert config['LOCATION'] == 'redis://127.0.0.1:6379/1'
+    assert config['OPTIONS']['PARSER_CLASS'] == 'redis.connection.HiredisParser'
+
+
+def test_hiredis_config():
+    url = f'hiredis://127.0.0.1:6379/?lib={redis_cache}'
+    config = django_cache_url.parse(url)
+
+    assert config['BACKEND'] == 'redis_cache.RedisCache'
+    assert config['LOCATION'] == 'redis://127.0.0.1:6379/0'
+    assert config['OPTIONS']['PARSER_CLASS'] == 'redis.connection.HiredisParser'
+
+
+def test_hiredis_config_with_password():
+    url = f'hiredis://:mypassword@127.0.0.1:6379/?lib={redis_cache}'
+    config = django_cache_url.parse(url)
+
+    assert config['BACKEND'] == 'redis_cache.RedisCache'
+    assert config['LOCATION'] == 'redis://:mypassword@127.0.0.1:6379/0'
+    assert config['OPTIONS']['PARSER_CLASS'] == 'redis.connection.HiredisParser'

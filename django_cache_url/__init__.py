@@ -69,7 +69,7 @@ def parse(url):
         raise Exception(f'Unknown backend: "{url.scheme}"')
 
     lib = cache_args.get('LIB')
-    if url.scheme.startswith('redis') and lib in BACKENDS:
+    if 'redis' in url.scheme and lib in BACKENDS:
         backend = BACKENDS[lib]
 
     config['BACKEND'] = backend
