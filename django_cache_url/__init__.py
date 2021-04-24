@@ -18,6 +18,7 @@ urlparse.uses_netloc.append('memcached')
 urlparse.uses_netloc.append('elasticache')
 urlparse.uses_netloc.append('djangopylibmc')
 urlparse.uses_netloc.append('pymemcached')
+urlparse.uses_netloc.append('pymemcache')
 urlparse.uses_netloc.append('redis')
 urlparse.uses_netloc.append('hiredis')
 
@@ -34,6 +35,7 @@ BACKENDS = {
     'memcached': 'django.core.cache.backends.memcached.PyLibMCCache',
     'djangopylibmc': 'django_pylibmc.memcached.PyLibMCCache',
     'pymemcached': 'django.core.cache.backends.memcached.MemcachedCache',
+    'pymemcache': 'django.core.cache.backends.memcached.PyMemcacheCache',
     DJANGO_REDIS_CACHE: 'redis_cache.RedisCache',
     'redis': 'django_redis.cache.RedisCache',
     'rediss': 'django_redis.cache.RedisCache',
@@ -80,7 +82,7 @@ def parse(url):
 
     # File based
     if not url.netloc:
-        if url.scheme in ('memcached', 'pymemcached', 'djangopylibmc'):
+        if url.scheme in ('memcached', 'pymemcached', 'pymemcache', 'djangopylibmc'):
             config['LOCATION'] = 'unix:' + path
 
         elif url.scheme in ('redis', 'hiredis'):

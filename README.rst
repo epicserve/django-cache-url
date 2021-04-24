@@ -49,6 +49,7 @@ Support currently exists for:
 * file: ``'file:///PATH/TO/FILE'``
 * memcached: ``'memcached://HOST:PORT'`` [#memcache]_
 * pymemcached: ``'pymemcached://HOST:PORT'`` For use with the `python-memcached`_ library. Useful if you're using Ubuntu <= 10.04.
+* pymemcache: ``'pymemcache://HOST:PORT'`` For use with the `pymemcache`_ library. Useful if you're using Ubuntu <= 10.04.
 * djangopylibmc: ``'djangopylibmc://HOST:PORT'`` For use with SASL based setups such as Heroku.
 * redis: ``'redis://[USER:PASSWORD@]HOST:PORT[/DB]'`` or ``'redis:///PATH/TO/SOCKET[/DB]'`` For use with `django-redis`_. To use `django-redis-cache`_ just add ``?lib=redis-cache`` to the URL.
 * rediss: ``'rediss://[USER:PASSWORD@]HOST:PORT[/DB]'`` For use with `django-redis`_.
@@ -63,6 +64,7 @@ All cache urls support optional cache arguments by using a query string, e.g.: `
 .. _django-redis: https://github.com/niwibe/django-redis
 .. _django-redis-cache: https://github.com/sebleier/django-redis-cache
 .. _python-memcached: https://github.com/linsomniac/python-memcached
+.. _pymemcache: https://github.com/pinterest/pymemcache
 .. _cache arguments documentation: https://docs.djangoproject.com/en/dev/topics/cache/#cache-arguments
 .. _django-uwsgi-cache: https://github.com/ionelmc/django-uwsgi-cache
 
