@@ -49,7 +49,7 @@ Support currently exists for:
 * file: ``'file:///PATH/TO/FILE'``
 * memcached: ``'memcached://HOST:PORT'`` [#memcache]_
 * pymemcached: ``'pymemcached://HOST:PORT'`` For use with the `python-memcached`_ library. Useful if you're using Ubuntu <= 10.04.
-* pymemcache: ``'pymemcache://HOST:PORT'`` For use with the `pymemcache`_ library. Useful if you're using Ubuntu <= 10.04.
+* pymemcache: ``'pymemcache://HOST:PORT'`` For use with the `pymemcache`_ library.
 * djangopylibmc: ``'djangopylibmc://HOST:PORT'`` For use with SASL based setups such as Heroku.
 * redis: ``'redis://[USER:PASSWORD@]HOST:PORT[/DB]'`` or ``'redis:///PATH/TO/SOCKET[/DB]'`` For use with `django-redis`_. To use `django-redis-cache`_ just add ``?lib=redis-cache`` to the URL.
 * rediss: ``'rediss://[USER:PASSWORD@]HOST:PORT[/DB]'`` For use with `django-redis`_.
