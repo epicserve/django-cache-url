@@ -14,6 +14,16 @@ def test_hiredis():
     assert config['OPTIONS']['PARSER_CLASS'] == 'redis.connection.HiredisParser'
 
 
+def test_hirediss():
+    url = 'hirediss://127.0.0.1:6379/0?key_prefix=site1'
+    config = django_cache_url.parse(url)
+
+    assert config['BACKEND'] == 'django_redis.cache.RedisCache'
+    assert config['LOCATION'] == 'rediss://127.0.0.1:6379/0'
+    assert config['KEY_PREFIX'] == 'site1'
+    assert config['OPTIONS']['PARSER_CLASS'] == 'redis.connection.HiredisParser'
+
+
 def test_hiredis_socket():
     url = 'hiredis:///path/to/socket/1?key_prefix=site1'
     config = django_cache_url.parse(url)

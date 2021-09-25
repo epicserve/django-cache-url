@@ -53,6 +53,7 @@ Support currently exists for:
 * redis: ``'redis://[USER:PASSWORD@]HOST:PORT[/DB]'`` or ``'redis:///PATH/TO/SOCKET[/DB]'`` For use with `django-redis`_. To use `django-redis-cache`_ just add ``?lib=redis-cache`` to the URL.
 * rediss: ``'rediss://[USER:PASSWORD@]HOST:PORT[/DB]'`` For use with `django-redis`_.
 * hiredis: ``'hiredis://[USER:PASSWORD@]HOST:PORT[/DB]'`` or ``'hiredis:///PATH/TO/SOCKET[/DB]'`` For use with django-redis library using HiredisParser.
+* hirediss: ``'hirediss://[USER:PASSWORD@]HOST:PORT[/DB]'`` or ``'hirediss:///PATH/TO/SOCKET[/DB]'`` For use with django-redis library using HiredisParser.
 * uwsgicache: ``'uwsgicache://[CACHENAME]'`` For use with `django-uwsgi-cache`_. Fallbacks to ``locmem`` if not running on uWSGI server.
 
 All cache urls support optional cache arguments by using a query string, e.g.: ``'memcached://HOST:PORT?key_prefix=site1'``. See the Django `cache arguments documentation`_.
