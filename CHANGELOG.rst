@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+v3.3.0
+------
+
+- Add support for pymemcache.
+
 v3.1.0
 ------
 

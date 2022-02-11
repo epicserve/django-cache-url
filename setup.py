@@ -22,7 +22,7 @@ from setuptools import setup
 
 setup(
     name='django-cache-url',
-    version='3.2.3',
+    version='3.3.0',
     url='https://github.com/epicserve/django-cache-url',
     license='MIT',
     author="Brent O'Connor",
