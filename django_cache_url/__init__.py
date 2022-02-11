@@ -40,6 +40,7 @@ BACKENDS = {
     'redis': 'django_redis.cache.RedisCache',
     'rediss': 'django_redis.cache.RedisCache',
     'hiredis': 'django_redis.cache.RedisCache',
+    'hirediss': 'django_redis.cache.RedisCache',
 }
 
 
@@ -62,8 +63,10 @@ def parse(url):
 
     url = urlparse.urlparse(url)
     path, query = url.path, url.query
+    parsed_query = urlparse.parse_qs(query)
 
-    cache_args = dict([(key.upper(), ';'.join(val)) for key, val in urlparse.parse_qs(query).items()])
+    cache_args = dict([(key.upper(), ';'.join(val)) for key, val in parsed_query.items()])
+    extra_location_args = ('ssl_cert_reqs', )
 
     # Update with environment configuration.
     backend = BACKENDS.get(url.scheme)
@@ -77,7 +80,7 @@ def parse(url):
     config['BACKEND'] = backend
 
     redis_options = {}
-    if url.scheme == 'hiredis':
+    if url.scheme in ('hiredis', 'hirediss'):
         redis_options['PARSER_CLASS'] = 'redis.connection.HiredisParser'
 
     # File based
@@ -100,16 +103,24 @@ def parse(url):
         # Handle multiple hosts
         config['LOCATION'] = ';'.join(url.netloc.split(','))
 
-        if url.scheme in ('redis', 'rediss', 'hiredis'):
+        if url.scheme in ('redis', 'rediss', 'hiredis', 'hirediss'):
             if url.password and lib != DJANGO_REDIS_CACHE:
                 redis_options['PASSWORD'] = url.password
             # Specifying the database is optional, use db 0 if not specified.
             db = path[1:] or '0'
             port = url.port if url.port else 6379
-            scheme = 'rediss' if url.scheme == 'rediss' else 'redis'
-            config['LOCATION'] = f'{scheme}://{url.hostname}:{port}/{db}'
-            if lib == DJANGO_REDIS_CACHE and url.password:
-                config['LOCATION'] = f'{scheme}://:{url.password}@{url.hostname}:{port}/{db}'
+            scheme = 'rediss' if url.scheme in ('rediss', 'hirediss') else 'redis'
+            location = f'{scheme}://{url.hostname}:{port}/{db}'
+            if lib == DJANGO_REDIS_CACHE and (url.password or url.username):
+                location = f'{scheme}://{url.username}:{url.password}@{url.hostname}:{port}/{db}'
+
+            extra_args = []
+            for k, v in parsed_query.items():
+                if k in extra_location_args:
+                    extra_args.append(f'{k}={v[0]}')
+            if len(extra_args) > 0:
+                location = f'{location}?{"&".join(extra_args)}'
+            config['LOCATION'] = location
 
             if lib == DJANGO_REDIS_CACHE:
                 if 'PARSER_CLASS' in cache_args:
@@ -118,7 +129,7 @@ def parse(url):
                 if 'CONNECTION_POOL_CLASS' in cache_args:
                     redis_options['CONNECTION_POOL_CLASS'] = cache_args['CONNECTION_POOL_CLASS']
 
-                if 'MAX_CONNECTIONS' in cache_args or 'TIMEOUT' in cache_args:
+                if 'MAX_CONNECTIONS' in cache_args or 'TIMEOUT' in cache_args or url.password or url.username:
                     redis_options['CONNECTION_POOL_CLASS_KWARGS'] = {}
 
                     if 'MAX_CONNECTIONS' in cache_args:
@@ -127,6 +138,12 @@ def parse(url):
 
                     if 'TIMEOUT' in cache_args:
                         redis_options['CONNECTION_POOL_CLASS_KWARGS']['timeout'] = int(cache_args['TIMEOUT'])
+
+                    if url.username:
+                        redis_options['CONNECTION_POOL_CLASS_KWARGS']['username'] = url.username
+
+                    if url.password:
+                        redis_options['CONNECTION_POOL_CLASS_KWARGS']['password'] = url.password
 
     if redis_options:
         config.setdefault('OPTIONS', {}).update(redis_options)

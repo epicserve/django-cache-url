@@ -132,3 +132,30 @@ def test_hiredis_config_with_password():
     assert config['BACKEND'] == 'redis_cache.RedisCache'
     assert config['LOCATION'] == 'redis://:mypassword@127.0.0.1:6379/0'
     assert config['OPTIONS']['PARSER_CLASS'] == 'redis.connection.HiredisParser'
+
+
+def test_hirediss_lots_of_options():
+    username = 'myusername'
+    password = 'mypassword'
+    host_and_port = '127.0.0.1:6379'
+    get_params = (
+        f'lib={redis_cache}',
+        'ssl_cert_reqs=optional',
+        'connection_pool_class=redis.BlockingConnectionPool',
+        'ssl_cert_reqs=optional',
+        'max_connections=50',
+        'timeout=20',
+    )
+    url = f'hirediss://{username}:{password}@{host_and_port}/?{"&".join(get_params)}'
+    config = django_cache_url.parse(url)
+
+    assert config['BACKEND'] == 'redis_cache.RedisCache'
+    assert config['LOCATION'] == f'rediss://{username}:{password}@{host_and_port}/0?ssl_cert_reqs=optional'
+    assert config['OPTIONS']['PARSER_CLASS'] == 'redis.connection.HiredisParser'
+    assert config['OPTIONS']['CONNECTION_POOL_CLASS'] == 'redis.BlockingConnectionPool'
+    assert config['OPTIONS']['CONNECTION_POOL_CLASS_KWARGS'] == {
+        'max_connections': 50,
+        'timeout': 20,
+        'username': username,
+        'password': password,
+    }
