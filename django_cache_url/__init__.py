@@ -2,6 +2,8 @@
 import os
 import re
 
+from django import VERSION
+
 try:
     import urllib.parse as urlparse
 except ImportError:  # python 2
@@ -25,6 +27,13 @@ urlparse.uses_netloc.append('hiredis')
 DEFAULT_ENV = 'CACHE_URL'
 DJANGO_REDIS_CACHE = 'redis-cache'
 
+# TODO Remove as soon as Django 3.2 goes EOL
+redis_backend = (
+    "django_redis.cache.RedisCache"
+    if VERSION[0] < 4
+    else "django.core.cache.backends.redis.RedisCache"
+)
+
 BACKENDS = {
     'db': 'django.core.cache.backends.db.DatabaseCache',
     'dummy': 'django.core.cache.backends.dummy.DummyCache',
@@ -37,9 +46,9 @@ BACKENDS = {
     'pymemcached': 'django.core.cache.backends.memcached.MemcachedCache',
     'pymemcache': 'django.core.cache.backends.memcached.PyMemcacheCache',
     DJANGO_REDIS_CACHE: 'redis_cache.RedisCache',
-    'redis': 'django_redis.cache.RedisCache',
-    'rediss': 'django_redis.cache.RedisCache',
-    'hiredis': 'django_redis.cache.RedisCache',
+    'redis': redis_backend,
+    'rediss': redis_backend,
+    'hiredis': redis_backend,
 }
 
 
