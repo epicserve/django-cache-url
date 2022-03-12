@@ -28,11 +28,7 @@ DEFAULT_ENV = 'CACHE_URL'
 DJANGO_REDIS_CACHE = 'redis-cache'
 
 # TODO Remove as soon as Django 3.2 goes EOL
-redis_backend = (
-    "django_redis.cache.RedisCache"
-    if VERSION[0] < 4
-    else "django.core.cache.backends.redis.RedisCache"
-)
+redis_backend = 'django_redis.cache.RedisCache' if VERSION[0] < 4 else 'django.core.cache.backends.redis.RedisCache'
 
 BACKENDS = {
     'db': 'django.core.cache.backends.db.DatabaseCache',
