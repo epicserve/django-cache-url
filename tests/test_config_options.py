@@ -1,5 +1,7 @@
 import os
 
+from django import VERSION
+
 import django_cache_url
 
 LOCATION = 'django.core.cache.backends.memcached.PyLibMCCache'
@@ -21,6 +23,7 @@ def test_setting_env_var_name():
 def test_setting_env_var():
     os.environ['CACHE_URL'] = 'redis://127.0.0.1:6379/0?key_prefix=site1'
     config = django_cache_url.config()
+    redis_backend = 'django_redis.cache.RedisCache' if VERSION[0] < 4 else 'django.core.cache.backends.redis.RedisCache'
 
-    assert config['BACKEND'] == 'django_redis.cache.RedisCache'
+    assert config['BACKEND'] == redis_backend
     assert config['LOCATION'] == 'redis://127.0.0.1:6379/0'
