@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v3.4.0
+
+- Add support for Django 4.0
+
 v3.3.0
 ------
 
