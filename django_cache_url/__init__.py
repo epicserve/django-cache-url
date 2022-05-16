@@ -28,7 +28,8 @@ DEFAULT_ENV = 'CACHE_URL'
 DJANGO_REDIS_CACHE = 'redis-cache'
 
 # TODO Remove as soon as Django 3.2 goes EOL
-redis_backend = 'django_redis.cache.RedisCache' if VERSION[0] < 4 else 'django.core.cache.backends.redis.RedisCache'
+BUILTIN_DJANGO_BACKEND = 'django.core.cache.backends.redis.RedisCache'
+redis_backend = 'django_redis.cache.RedisCache' if VERSION[0] < 4 else BUILTIN_DJANGO_BACKEND
 
 BACKENDS = {
     'db': 'django.core.cache.backends.db.DatabaseCache',
@@ -106,14 +107,14 @@ def parse(url):
         config['LOCATION'] = ';'.join(url.netloc.split(','))
 
         if url.scheme in ('redis', 'rediss', 'hiredis'):
-            if url.password and lib != DJANGO_REDIS_CACHE:
+            if url.password and lib != DJANGO_REDIS_CACHE and backend != BUILTIN_DJANGO_BACKEND:
                 redis_options['PASSWORD'] = url.password
             # Specifying the database is optional, use db 0 if not specified.
             db = path[1:] or '0'
             port = url.port if url.port else 6379
             scheme = 'rediss' if url.scheme == 'rediss' else 'redis'
             config['LOCATION'] = f'{scheme}://{url.hostname}:{port}/{db}'
-            if lib == DJANGO_REDIS_CACHE and url.password:
+            if url.password and (lib == DJANGO_REDIS_CACHE or backend == BUILTIN_DJANGO_BACKEND):
                 config['LOCATION'] = f'{scheme}://:{url.password}@{url.hostname}:{port}/{db}'
 
             if lib == DJANGO_REDIS_CACHE:
