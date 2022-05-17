@@ -8,6 +8,7 @@ import django_cache_url
 # HIREDIS
 #
 
+
 def test_hiredis():
     url = 'hiredis://127.0.0.1:6379/0?key_prefix=site1'
     config = django_cache_url.parse(url)
