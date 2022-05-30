@@ -1,8 +1,8 @@
 CHANGELOG
 =========
 
-Unreleased
-----------
+v3.4.1
+------
 
 - Fix a bug where providing a password for the redis backend would produce an invalid configuration on Django 4.
 
