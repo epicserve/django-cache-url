@@ -25,11 +25,12 @@ urlparse.uses_netloc.append('redis')
 urlparse.uses_netloc.append('hiredis')
 
 DEFAULT_ENV = 'CACHE_URL'
-DJANGO_REDIS_CACHE = 'redis-cache'
-
 # TODO Remove as soon as Django 3.2 goes EOL
 BUILTIN_DJANGO_BACKEND = 'django.core.cache.backends.redis.RedisCache'
-redis_backend = 'django_redis.cache.RedisCache' if VERSION[0] < 4 else BUILTIN_DJANGO_BACKEND
+
+DJANGO_REDIS_CACHE_LIB_KEY = 'redis-cache'
+DJANGO_REDIS_CACHE_BACKEND = 'redis_cache.RedisCache'
+DJANGO_REDIS_BACKEND = 'django_redis.cache.RedisCache' if VERSION[0] < 4 else BUILTIN_DJANGO_BACKEND
 
 BACKENDS = {
     'db': 'django.core.cache.backends.db.DatabaseCache',
@@ -42,10 +43,10 @@ BACKENDS = {
     'djangopylibmc': 'django_pylibmc.memcached.PyLibMCCache',
     'pymemcached': 'django.core.cache.backends.memcached.MemcachedCache',
     'pymemcache': 'django.core.cache.backends.memcached.PyMemcacheCache',
-    DJANGO_REDIS_CACHE: 'redis_cache.RedisCache',
-    'redis': redis_backend,
-    'rediss': redis_backend,
-    'hiredis': redis_backend,
+    DJANGO_REDIS_CACHE_LIB_KEY: DJANGO_REDIS_CACHE_BACKEND,
+    'redis': DJANGO_REDIS_BACKEND,
+    'rediss': DJANGO_REDIS_BACKEND,
+    'hiredis': DJANGO_REDIS_BACKEND,
 }
 
 
@@ -107,17 +108,17 @@ def parse(url):
         config['LOCATION'] = ';'.join(url.netloc.split(','))
 
         if url.scheme in ('redis', 'rediss', 'hiredis'):
-            if url.password and lib != DJANGO_REDIS_CACHE and backend != BUILTIN_DJANGO_BACKEND:
+            if url.password and lib != DJANGO_REDIS_CACHE_LIB_KEY and backend != BUILTIN_DJANGO_BACKEND:
                 redis_options['PASSWORD'] = url.password
             # Specifying the database is optional, use db 0 if not specified.
             db = path[1:] or '0'
             port = url.port if url.port else 6379
             scheme = 'rediss' if url.scheme == 'rediss' else 'redis'
             config['LOCATION'] = f'{scheme}://{url.hostname}:{port}/{db}'
-            if url.password and (lib == DJANGO_REDIS_CACHE or backend == BUILTIN_DJANGO_BACKEND):
+            if url.password and (lib == DJANGO_REDIS_CACHE_LIB_KEY or backend == BUILTIN_DJANGO_BACKEND):
                 config['LOCATION'] = f'{scheme}://:{url.password}@{url.hostname}:{port}/{db}'
 
-            if lib == DJANGO_REDIS_CACHE:
+            if lib == DJANGO_REDIS_CACHE_LIB_KEY:
                 if 'PARSER_CLASS' in cache_args:
                     redis_options['PARSER_CLASS'] = cache_args['PARSER_CLASS']
 
