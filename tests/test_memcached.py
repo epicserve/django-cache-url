@@ -19,7 +19,7 @@ def test_memcached_url_multiple_locations():
 def test_memcached_socket_url():
     url = 'memcached:///path/to/socket/'
     config = django_cache_url.parse(url)
-    assert config['LOCATION'] == 'unix:/path/to/socket/'
+    assert config['LOCATION'] == 'unix:///path/to/socket/'
 
 
 def test_elasticache_url():
