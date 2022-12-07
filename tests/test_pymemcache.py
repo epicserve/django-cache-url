@@ -19,4 +19,4 @@ def test_pymemcache_url_multiple_locations():
 def test_pymemcache_socket_url():
     url = 'pymemcache:///path/to/socket/'
     config = django_cache_url.parse(url)
-    assert config['LOCATION'] == 'unix:/path/to/socket/'
+    assert config['LOCATION'] == 'unix:///path/to/socket/'

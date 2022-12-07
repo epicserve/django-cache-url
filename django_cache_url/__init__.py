@@ -90,7 +90,7 @@ def parse(url):
     # File based
     if not url.netloc:
         if url.scheme in ('memcached', 'pymemcached', 'pymemcache', 'djangopylibmc'):
-            config['LOCATION'] = 'unix:' + path
+            config['LOCATION'] = 'unix://' + path
 
         elif url.scheme in ('redis', 'hiredis'):
             match = re.match(r'.+?(?P<db>\d+)', path)
@@ -99,7 +99,7 @@ def parse(url):
                 path = path[:path.rfind('/')]
             else:
                 db = '0'
-            config['LOCATION'] = 'unix:%s?db=%s' % (path, db)
+            config['LOCATION'] = 'unix://%s?db=%s' % (path, db)
         else:
             config['LOCATION'] = path
     # URL based
