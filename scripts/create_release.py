@@ -28,9 +28,7 @@ def update_version(version):
 def commit_and_tag(version):
     os.popen('git add setup.py')
     os.popen(f'git commit -m "Bump version to {version}"')
-    # without sleep it tags the previous commit
-    time.sleep(0.5)
-    print(os.popen(f'git tag -a -m "" v{version}').read())
+    os.popen(f'git tag -a -m "" v{version}')
 
 
 def push():
@@ -57,6 +55,9 @@ if __name__ == "__main__":
         new_version = input(f'What version would you like for this release (current version: {current_version})? ')
 
     update_version(new_version)
+
+    # without sleep it tags the previous commit
+    time.sleep(1)
 
     commit_and_tag(new_version)
 
