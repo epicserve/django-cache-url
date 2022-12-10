@@ -57,7 +57,7 @@ if __name__ == "__main__":
     update_version(new_version)
 
     # without sleep it tags the previous commit
-    time.sleep(1)
+    time.sleep(2)
 
     commit_and_tag(new_version)
 
