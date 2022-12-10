@@ -22,9 +22,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - python-version: "3.6"
-            django-version: Django==2.2
-
           - python-version: "3.7"
             django-version: Django==3.2
 
@@ -35,13 +32,19 @@ jobs:
             django-version: Django==3.2
 
           - python-version: "3.9"
-            django-version: Django==4.0
+            django-version: Django==4.1
 
           - python-version: "3.10"
             django-version: Django==3.2
 
           - python-version: "3.10"
-            django-version: Django==4.0
+            django-version: Django==4.1
+
+          - python-version: "3.11"
+            django-version: Django==3.2
+
+          - python-version: "3.11"
+            django-version: Django==4.1
 
     name: Run Python ${{ matrix.python-version }} tests
     steps:
