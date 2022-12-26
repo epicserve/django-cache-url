@@ -27,10 +27,11 @@ urlparse.uses_netloc.append('hiredis')
 DEFAULT_ENV = 'CACHE_URL'
 # TODO Remove as soon as Django 3.2 goes EOL
 BUILTIN_DJANGO_BACKEND = 'django.core.cache.backends.redis.RedisCache'
+EXTERNAL_DJANGO_BACKEND = 'django_redis.cache.RedisCache'
 
 DJANGO_REDIS_CACHE_LIB_KEY = 'redis-cache'
 DJANGO_REDIS_CACHE_BACKEND = 'redis_cache.RedisCache'
-DJANGO_REDIS_BACKEND = 'django_redis.cache.RedisCache' if VERSION[0] < 4 else BUILTIN_DJANGO_BACKEND
+DJANGO_REDIS_BACKEND = EXTERNAL_DJANGO_BACKEND if VERSION[0] < 4 else BUILTIN_DJANGO_BACKEND
 
 BACKENDS = {
     'db': 'django.core.cache.backends.db.DatabaseCache',
@@ -88,7 +89,7 @@ def parse(url):
         redis_options['PARSER_CLASS'] = 'redis.connection.HiredisParser'
 
     # File based
-    if not url.netloc:
+    if url.hostname is None:  # only path exists
         if url.scheme in ('memcached', 'pymemcached', 'pymemcache', 'djangopylibmc'):
             config['LOCATION'] = 'unix://' + path
 
@@ -99,7 +100,30 @@ def parse(url):
                 path = path[:path.rfind('/')]
             else:
                 db = '0'
-            config['LOCATION'] = 'unix://%s?db=%s' % (path, db)
+
+            config['LOCATION'] = f'unix://{path}?db={db}'  # No auth
+
+            username = url.username or ''
+            password = url.password or ''
+            if backend == EXTERNAL_DJANGO_BACKEND:
+                # django-redis socket connection:
+                # unix://[[username]:[password]]@/path/to/socket.sock?db=0
+                if username != '' or password != '':
+                    config['LOCATION'] = f'unix://{username}:{password}@{path}?db={db}'
+            elif backend == BUILTIN_DJANGO_BACKEND:
+                # redis-py (native django 4 backend) socket connection:
+                # unix://[username@]/path/to/socket.sock?db=0[&password=password]
+                if username != '':
+                    config['LOCATION'] = f'unix://{username}@{path}?db={db}'
+                if password != '':
+                    config['LOCATION'] += f'&password={password}'
+            elif backend == DJANGO_REDIS_CACHE_BACKEND:
+                # django-redis-cache socket connection:
+                # unix://[:password]@/path/to/socket.sock?db=0
+                if username != '':
+                    raise Exception('Username is not supported for unix socket connection with lib: redis-cache')
+                if password != '':
+                    config['LOCATION'] = f'unix://:{password}@{path}?db={db}'
         else:
             config['LOCATION'] = path
     # URL based

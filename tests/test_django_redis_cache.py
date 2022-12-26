@@ -1,3 +1,5 @@
+import pytest
+
 import django_cache_url
 
 redis_cache = django_cache_url.DJANGO_REDIS_CACHE_LIB_KEY
@@ -132,3 +134,30 @@ def test_hiredis_config_with_password():
     assert config['BACKEND'] == django_cache_url.DJANGO_REDIS_CACHE_BACKEND
     assert config['LOCATION'] == 'redis://:mypassword@127.0.0.1:6379/0'
     assert config['OPTIONS']['PARSER_CLASS'] == 'redis.connection.HiredisParser'
+
+
+# Socket connection
+def test_basic_socket():
+    url = f'redis:///path/to/socket/1?lib={redis_cache}'
+    config = django_cache_url.parse(url)
+
+    assert config['BACKEND'] == django_cache_url.DJANGO_REDIS_CACHE_BACKEND
+
+    assert config['LOCATION'] == 'unix:///path/to/socket?db=1'
+    assert 'OPTIONS' not in config
+
+
+def test_basic_socket_with_password():
+    url = f'redis://:bar@/path/to/socket/1?lib={redis_cache}'
+    config = django_cache_url.parse(url)
+
+    assert config['BACKEND'] == django_cache_url.DJANGO_REDIS_CACHE_BACKEND
+    assert config['LOCATION'] == 'unix://:bar@/path/to/socket?db=1'
+    assert 'OPTIONS' not in config
+
+
+def test_basic_socket_with_username():
+    url = f'redis://foo:bar@/path/to/socket/1?lib={redis_cache}'
+    with pytest.raises(Exception) as exc_info:
+        django_cache_url.parse(url)
+    assert str(exc_info.value).startswith('Username is not supported for unix socket connection')
