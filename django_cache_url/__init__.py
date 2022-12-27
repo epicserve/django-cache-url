@@ -27,11 +27,13 @@ urlparse.uses_netloc.append('hiredis')
 DEFAULT_ENV = 'CACHE_URL'
 # TODO Remove as soon as Django 3.2 goes EOL
 BUILTIN_DJANGO_BACKEND = 'django.core.cache.backends.redis.RedisCache'
-EXTERNAL_DJANGO_BACKEND = 'django_redis.cache.RedisCache'
+
+DJANGO_REDIS_BACKEND = 'django_redis.cache.RedisCache'
 
 DJANGO_REDIS_CACHE_LIB_KEY = 'redis-cache'
 DJANGO_REDIS_CACHE_BACKEND = 'redis_cache.RedisCache'
-DJANGO_REDIS_BACKEND = EXTERNAL_DJANGO_BACKEND if VERSION[0] < 4 else BUILTIN_DJANGO_BACKEND
+
+DEFAULT_REDIS_BACKEND = DJANGO_REDIS_BACKEND if VERSION[0] < 4 else BUILTIN_DJANGO_BACKEND
 
 BACKENDS = {
     'db': 'django.core.cache.backends.db.DatabaseCache',
@@ -45,9 +47,9 @@ BACKENDS = {
     'pymemcached': 'django.core.cache.backends.memcached.MemcachedCache',
     'pymemcache': 'django.core.cache.backends.memcached.PyMemcacheCache',
     DJANGO_REDIS_CACHE_LIB_KEY: DJANGO_REDIS_CACHE_BACKEND,
-    'redis': DJANGO_REDIS_BACKEND,
-    'rediss': DJANGO_REDIS_BACKEND,
-    'hiredis': DJANGO_REDIS_BACKEND,
+    'redis': DEFAULT_REDIS_BACKEND,
+    'rediss': DEFAULT_REDIS_BACKEND,
+    'hiredis': DEFAULT_REDIS_BACKEND,
 }
 
 
@@ -105,7 +107,7 @@ def parse(url):
 
             username = url.username or ''
             password = url.password or ''
-            if backend == EXTERNAL_DJANGO_BACKEND:
+            if backend == DJANGO_REDIS_BACKEND:
                 # django-redis socket connection:
                 # unix://[[username]:[password]]@/path/to/socket.sock?db=0
                 if username != '' or password != '':
@@ -142,7 +144,7 @@ def parse(url):
             username = url.username or ''
             password = url.password or ''
 
-            if backend == EXTERNAL_DJANGO_BACKEND:
+            if backend == DJANGO_REDIS_BACKEND:
                 # django-redis:
                 # redis://[[username]:[password]]@localhost:6379/0
                 # as for the password: `OPTIONS` does not overwrite the password in the `LOCATION`
