@@ -119,6 +119,9 @@ def parse(url):
                     config['LOCATION'] = f'unix://{username}@{path}?db={db}'
                 if password != '':
                     config['LOCATION'] += f'&password={password}'
+
+                redis_options = parser_buildin_django_backend_options(cache_args, redis_options)
+
             elif backend == DJANGO_REDIS_CACHE_BACKEND:
                 # django-redis-cache socket connection:
                 # unix://[:password]@/path/to/socket.sock?db=0
@@ -160,6 +163,8 @@ def parse(url):
                 # redis://[[username]:[password]]@localhost:6379/0
                 if username != '' or password != '':
                     config['LOCATION'] = f'{scheme}://{username}:{password}@{url.hostname}:{port}/{db}'
+
+                redis_options = parser_buildin_django_backend_options(cache_args, redis_options)
 
             elif backend == DJANGO_REDIS_CACHE_BACKEND:
                 # django-redis-cache:
@@ -205,3 +210,13 @@ def parse(url):
     config.update(cache_args)
 
     return config
+
+
+def parser_buildin_django_backend_options(cache_args, redis_options):
+    if 'PARSER_CLASS' in cache_args:
+        redis_options['PARSER_CLASS'] = cache_args['PARSER_CLASS']
+    if 'POOL_CLASS' in cache_args:
+        redis_options['POOL_CLASS'] = cache_args['POOL_CLASS']
+    # native redis backend requires the keys in the `OPTIONS` to be lowercase
+    redis_options = {k.lower(): v for k, v in redis_options.items()}
+    return redis_options
