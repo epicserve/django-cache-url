@@ -3,6 +3,7 @@ dist
 *.egg-info
 .tox
 .python-version
+__pycache__
 
 # coverage
 .coverage
