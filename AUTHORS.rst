@@ -17,3 +17,4 @@ Contributors
 - Allan Mercado <mapes911@gmail.com>
 - Jannis Leidel <jannis@leidel.info>
 - Mjumbe Wawatu Ukweli <mjumbewu@gmail.com>
+- Paolo Melchiorre <paolo@melchiorre.org>

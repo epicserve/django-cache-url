@@ -1,6 +1,21 @@
 CHANGELOG
 =========
 
+v3.5.0
+------
+
+- Add support for Django 4.2, 5.0
+- Add support for Python 3.12
+- Drop support for Python 3.7
+
+v3.4.4
+------
+
+- Add support for Django 4.1
+- Drop support for Django 2.2, 4.0
+- Add support for Python 3.11
+- Drop support for Python 3.6
+
 v3.4.2
 ------
 
