@@ -47,6 +47,28 @@ def publish():
 
 
 if __name__ == "__main__":
+    """
+    TODO: This script needs fixed. You can run it, but you'll have to commit manually
+    and push the tag and commit.
+    
+    Then you can run the following:
+    
+    # Install requirements
+    python -m pip install build twine
+    
+    # Build
+    python -m build
+    
+    # Check build
+    twine check dist/*
+    
+    # Test upload
+    twine upload -r testpypi dist/*
+    
+    # Upload
+    twine upload dist/*
+    """
+
     # change working directory so you can run this script from the project root or in the same directory as the file.
     parent_dir = Path(os.path.realpath(os.path.dirname(__file__))).parent
     os.chdir(parent_dir)
