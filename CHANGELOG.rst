@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-v3.4.1
+v3.4.3
 ------
 
 - Add support for Django 4.2, 5.0
