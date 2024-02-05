@@ -50,21 +50,21 @@ if __name__ == "__main__":
     """
     TODO: This script needs fixed. You can run it, but you'll have to commit manually
     and push the tag and commit.
-    
+
     Then you can run the following:
-    
+
     # Install requirements
     python -m pip install build twine
-    
+
     # Build
     python -m build
-    
+
     # Check build
     twine check dist/*
-    
+
     # Test upload
     twine upload -r testpypi dist/*
-    
+
     # Upload
     twine upload dist/*
     """
