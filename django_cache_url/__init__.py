@@ -28,9 +28,12 @@ DEFAULT_ENV = 'CACHE_URL'
 # TODO Remove as soon as Django 3.2 goes EOL
 BUILTIN_DJANGO_BACKEND = 'django.core.cache.backends.redis.RedisCache'
 
+DJANGO_REDIS_BACKEND = 'django_redis.cache.RedisCache'
+
 DJANGO_REDIS_CACHE_LIB_KEY = 'redis-cache'
 DJANGO_REDIS_CACHE_BACKEND = 'redis_cache.RedisCache'
-DJANGO_REDIS_BACKEND = 'django_redis.cache.RedisCache' if VERSION[0] < 4 else BUILTIN_DJANGO_BACKEND
+
+DEFAULT_REDIS_BACKEND = DJANGO_REDIS_BACKEND if VERSION[0] < 4 else BUILTIN_DJANGO_BACKEND
 
 BACKENDS = {
     'db': 'django.core.cache.backends.db.DatabaseCache',
@@ -44,9 +47,9 @@ BACKENDS = {
     'pymemcached': 'django.core.cache.backends.memcached.MemcachedCache',
     'pymemcache': 'django.core.cache.backends.memcached.PyMemcacheCache',
     DJANGO_REDIS_CACHE_LIB_KEY: DJANGO_REDIS_CACHE_BACKEND,
-    'redis': DJANGO_REDIS_BACKEND,
-    'rediss': DJANGO_REDIS_BACKEND,
-    'hiredis': DJANGO_REDIS_BACKEND,
+    'redis': DEFAULT_REDIS_BACKEND,
+    'rediss': DEFAULT_REDIS_BACKEND,
+    'hiredis': DEFAULT_REDIS_BACKEND,
 }
 
 
@@ -88,7 +91,7 @@ def parse(url):
         redis_options['PARSER_CLASS'] = 'redis.connection.HiredisParser'
 
     # File based
-    if not url.netloc:
+    if url.hostname is None:  # only path exists
         if url.scheme in ('memcached', 'pymemcached', 'pymemcache', 'djangopylibmc'):
             config['LOCATION'] = 'unix://' + path
 
@@ -99,7 +102,33 @@ def parse(url):
                 path = path[:path.rfind('/')]
             else:
                 db = '0'
-            config['LOCATION'] = 'unix://%s?db=%s' % (path, db)
+
+            config['LOCATION'] = f'unix://{path}?db={db}'  # No auth
+
+            username = url.username or ''
+            password = url.password or ''
+            if backend == DJANGO_REDIS_BACKEND:
+                # django-redis socket connection:
+                # unix://[[username]:[password]]@/path/to/socket.sock?db=0
+                if username != '' or password != '':
+                    config['LOCATION'] = f'unix://{username}:{password}@{path}?db={db}'
+            elif backend == BUILTIN_DJANGO_BACKEND:
+                # redis-py (native django 4 backend) socket connection:
+                # unix://[username@]/path/to/socket.sock?db=0[&password=password]
+                if username != '':
+                    config['LOCATION'] = f'unix://{username}@{path}?db={db}'
+                if password != '':
+                    config['LOCATION'] += f'&password={password}'
+
+                redis_options = parser_buildin_django_backend_options(cache_args, redis_options)
+
+            elif backend == DJANGO_REDIS_CACHE_BACKEND:
+                # django-redis-cache socket connection:
+                # unix://[:password]@/path/to/socket.sock?db=0
+                if username != '':
+                    raise Exception('Username is not supported for unix socket connection with lib: redis-cache')
+                if password != '':
+                    config['LOCATION'] = f'unix://:{password}@{path}?db={db}'
         else:
             config['LOCATION'] = path
     # URL based
@@ -107,18 +136,45 @@ def parse(url):
         # Handle multiple hosts
         config['LOCATION'] = ';'.join(url.netloc.split(','))
 
+        # Redis
         if url.scheme in ('redis', 'rediss', 'hiredis'):
-            if url.password and lib != DJANGO_REDIS_CACHE_LIB_KEY and backend != BUILTIN_DJANGO_BACKEND:
-                redis_options['PASSWORD'] = url.password
             # Specifying the database is optional, use db 0 if not specified.
             db = path[1:] or '0'
             port = url.port if url.port else 6379
             scheme = 'rediss' if url.scheme == 'rediss' else 'redis'
-            config['LOCATION'] = f'{scheme}://{url.hostname}:{port}/{db}'
-            if url.password and (lib == DJANGO_REDIS_CACHE_LIB_KEY or backend == BUILTIN_DJANGO_BACKEND):
-                config['LOCATION'] = f'{scheme}://:{url.password}@{url.hostname}:{port}/{db}'
+            config['LOCATION'] = f'{scheme}://{url.hostname}:{port}/{db}'  # No auth
 
-            if lib == DJANGO_REDIS_CACHE_LIB_KEY:
+            username = url.username or ''
+            password = url.password or ''
+
+            if backend == DJANGO_REDIS_BACKEND:
+                # django-redis:
+                # redis://[[username]:[password]]@localhost:6379/0
+                # as for the password: `OPTIONS` does not overwrite the password in the `LOCATION`
+                # but we still set password in `OPTIONS` rather than `LOCATION`
+                if username != '':
+                    config['LOCATION'] = f'{scheme}://{username}@{url.hostname}:{port}/{db}'
+
+                if password != '':
+                    redis_options['PASSWORD'] = password
+
+            elif backend == BUILTIN_DJANGO_BACKEND:
+                # redis-py (native django 4 backend):
+                # redis://[[username]:[password]]@localhost:6379/0
+                if username != '' or password != '':
+                    config['LOCATION'] = f'{scheme}://{username}:{password}@{url.hostname}:{port}/{db}'
+
+                redis_options = parser_buildin_django_backend_options(cache_args, redis_options)
+
+            elif backend == DJANGO_REDIS_CACHE_BACKEND:
+                # django-redis-cache:
+                # redis://[:password]@localhost:6379/0
+                if username != '':
+                    raise Exception('Username is not supported for redis connection with lib: redis-cache')
+                if password != '':
+                    config['LOCATION'] = f'{scheme}://:{password}@{url.hostname}:{port}/{db}'
+
+                # Update redis options
                 if 'PARSER_CLASS' in cache_args:
                     redis_options['PARSER_CLASS'] = cache_args['PARSER_CLASS']
 
@@ -154,3 +210,13 @@ def parse(url):
     config.update(cache_args)
 
     return config
+
+
+def parser_buildin_django_backend_options(cache_args, redis_options):
+    if 'PARSER_CLASS' in cache_args:
+        redis_options['PARSER_CLASS'] = cache_args['PARSER_CLASS']
+    if 'POOL_CLASS' in cache_args:
+        redis_options['POOL_CLASS'] = cache_args['POOL_CLASS']
+    # native redis backend requires the keys in the `OPTIONS` to be lowercase
+    redis_options = {k.lower(): v for k, v in redis_options.items()}
+    return redis_options

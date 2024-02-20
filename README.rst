@@ -51,9 +51,9 @@ Support currently exists for:
 * pymemcached: ``'pymemcached://HOST:PORT'`` For use with the `python-memcached`_ library. Useful if you're using Ubuntu <= 10.04.
 * pymemcache: ``'pymemcache://HOST:PORT'`` For use with the `pymemcache`_ library.
 * djangopylibmc: ``'djangopylibmc://HOST:PORT'`` For use with SASL based setups such as Heroku.
-* redis: ``'redis://[USER:PASSWORD@]HOST:PORT[/DB]'`` or ``'redis:///PATH/TO/SOCKET[/DB]'`` For use with `django-redis`_. To use `django-redis-cache`_ just add ``?lib=redis-cache`` to the URL.
-* rediss: ``'rediss://[USER:PASSWORD@]HOST:PORT[/DB]'`` For use with `django-redis`_.
-* hiredis: ``'hiredis://[USER:PASSWORD@]HOST:PORT[/DB]'`` or ``'hiredis:///PATH/TO/SOCKET[/DB]'`` For use with django-redis library using HiredisParser.
+* redis: ``'redis://[USER:PASSWORD@]HOST:PORT[/DB]'`` or ``'redis://[USER:PASSWORD@]/PATH/TO/SOCKET[/DB]'`` If Django >= 4.0, the `native redis backend (redis-py)`_ will be used, otherwise for use with `django-redis`_. To use `django-redis-cache`_ just add ``?lib=redis-cache`` to the URL (it does not support ``USER`` field).
+* rediss: ``'rediss://[USER:PASSWORD@]HOST:PORT[/DB]'`` For use with `native redis backend (redis-py)`_ or `django-redis`_.
+* hiredis: ``'hiredis://[USER:PASSWORD@]HOST:PORT[/DB]'`` or ``'hiredis://[USER:PASSWORD@]/PATH/TO/SOCKET[/DB]'`` For use with `native redis backend (redis-py)`_ or `django-redis`_ library using HiredisParser.
 * uwsgicache: ``'uwsgicache://[CACHENAME]'`` For use with `django-uwsgi-cache`_. Fallbacks to ``locmem`` if not running on uWSGI server.
 
 All cache urls support optional cache arguments by using a query string, e.g.: ``'memcached://HOST:PORT?key_prefix=site1'``. See the Django `cache arguments documentation`_.
@@ -61,6 +61,7 @@ All cache urls support optional cache arguments by using a query string, e.g.: `
 .. [#memcache] To specify multiple instances, separate the the ``HOST:PORT``` pair
                by commas, e.g: ``'memcached://HOST1:PORT1,HOST2:PORT2``
 
+.. _native Redis backend (redis-py): https://docs.djangoproject.com/en/4.0/topics/cache/#redis
 .. _django-redis: https://github.com/niwibe/django-redis
 .. _django-redis-cache: https://github.com/sebleier/django-redis-cache
 .. _python-memcached: https://github.com/linsomniac/python-memcached

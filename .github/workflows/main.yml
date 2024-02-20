@@ -68,6 +68,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
       - run: |
-          pip install pytest coverage pytest-cov ${{ matrix.django-version }}
+          pip install pytest coverage pytest-cov mock ${{ matrix.django-version }}
           export PYTHONPATH=`pwd`:$PYTHONPATH
           pytest
