@@ -93,7 +93,7 @@ def parse(url):
             config['LOCATION'] = 'unix://' + path
 
         elif url.scheme in ('redis', 'hiredis'):
-            match = re.match(r'.+?(?P<db>\d+)', path)
+            match = re.match(r'.+?(?P<db>\d+)$', path)
             if match:
                 db = match.group('db')
                 path = path[:path.rfind('/')]
