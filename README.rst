@@ -58,8 +58,8 @@ Support currently exists for:
 
 All cache urls support optional cache arguments by using a query string, e.g.: ``'memcached://HOST:PORT?key_prefix=site1'``. See the Django `cache arguments documentation`_.
 
-.. [#memcache] To specify multiple instances, separate the the ``HOST:PORT``` pair
-               by commas, e.g: ``'memcached://HOST1:PORT1,HOST2:PORT2``
+.. [#memcache] To specify multiple instances, separate the ``HOST:PORT`` pair
+               by commas, e.g: ``'memcached://HOST1:PORT1,HOST2:PORT2'``
 
 .. _django-redis: https://github.com/niwibe/django-redis
 .. _django-redis-cache: https://github.com/sebleier/django-redis-cache
