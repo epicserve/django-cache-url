@@ -47,6 +47,13 @@ def test_redis_socket():
     assert 'OPTIONS' not in config
 
 
+def test_redis_socket_path_with_digits():
+    url = 'redis:///tmp/277cd7a/redis.sock/0'
+    config = django_cache_url.parse(url)
+
+    assert config['LOCATION'] == 'unix:///tmp/277cd7a/redis.sock?db=0'
+
+
 @pytest.mark.skipif(DJANGO_VERSION[0] >= 4, reason="requires Django 3 or lower")
 def test_redis_with_password_dj3():
     url = 'redis://:redispass@127.0.0.1:6379/0'
