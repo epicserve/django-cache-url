@@ -1,7 +1,3 @@
-import pytest
-
-from django import VERSION as DJANGO_VERSION
-
 import django_cache_url
 
 #
@@ -31,7 +27,7 @@ def test_hiredis_socket():
 # REDIS
 #
 
-def test_redis_dj4():
+def test_redis():
     url = 'redis://127.0.0.1:6379/0?key_prefix=site1'
     config = django_cache_url.parse(url)
 
@@ -47,21 +43,10 @@ def test_redis_socket():
     assert 'OPTIONS' not in config
 
 
-@pytest.mark.skipif(DJANGO_VERSION[0] >= 4, reason="requires Django 3 or lower")
-def test_redis_with_password_dj3():
+def test_redis_with_password():
     url = 'redis://:redispass@127.0.0.1:6379/0'
     config = django_cache_url.parse(url)
 
     assert config['BACKEND'] == django_cache_url.DJANGO_REDIS_BACKEND
-    assert config['LOCATION'] == 'redis://127.0.0.1:6379/0'
-    assert config['OPTIONS']['PASSWORD'] == 'redispass'
-
-
-@pytest.mark.skipif(DJANGO_VERSION[0] < 4, reason="requires Django 4 or higher")
-def test_redis_with_password_dj4():
-    url = 'redis://:redispass@127.0.0.1:6379/0'
-    config = django_cache_url.parse(url)
-
-    assert config['BACKEND'] == django_cache_url.BUILTIN_DJANGO_BACKEND
     assert config['LOCATION'] == 'redis://:redispass@127.0.0.1:6379/0'
     assert 'PASSWORD' not in config.get('OPTIONS', {})
