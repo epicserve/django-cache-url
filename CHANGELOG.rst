@@ -5,6 +5,7 @@ v3.4.6
 ------
 
 - Drop support for Django 3.2
+- Add support for Django 5.2 and 6.0
 
 v3.4.5
 ------

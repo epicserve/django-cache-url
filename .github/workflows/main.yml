@@ -35,17 +35,29 @@ jobs:
           - python-version: "3.10"
             django-version: Django==5.0
 
+          - python-version: "3.10"
+            django-version: Django==5.2
+
           - python-version: "3.11"
             django-version: Django==4.2
 
           - python-version: "3.11"
             django-version: Django==5.0
 
+          - python-version: "3.11"
+            django-version: Django==5.2
+
           - python-version: "3.12"
             django-version: Django==4.2
 
           - python-version: "3.12"
             django-version: Django==5.0
+
+          - python-version: "3.12"
+            django-version: Django==5.2
+
+          - python-version: "3.12"
+            django-version: Django==6.0
 
     name: Run Python ${{ matrix.python-version }} tests
     steps:
