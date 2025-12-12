@@ -2,8 +2,6 @@
 import os
 import re
 
-from django import VERSION
-
 try:
     import urllib.parse as urlparse
 except ImportError:  # python 2
@@ -25,12 +23,10 @@ urlparse.uses_netloc.append('redis')
 urlparse.uses_netloc.append('hiredis')
 
 DEFAULT_ENV = 'CACHE_URL'
-# TODO Remove as soon as Django 3.2 goes EOL
-BUILTIN_DJANGO_BACKEND = 'django.core.cache.backends.redis.RedisCache'
 
 DJANGO_REDIS_CACHE_LIB_KEY = 'redis-cache'
 DJANGO_REDIS_CACHE_BACKEND = 'redis_cache.RedisCache'
-DJANGO_REDIS_BACKEND = 'django_redis.cache.RedisCache' if VERSION[0] < 4 else BUILTIN_DJANGO_BACKEND
+DJANGO_REDIS_BACKEND = 'django.core.cache.backends.redis.RedisCache'
 
 BACKENDS = {
     'db': 'django.core.cache.backends.db.DatabaseCache',
@@ -108,14 +104,14 @@ def parse(url):
         config['LOCATION'] = ';'.join(url.netloc.split(','))
 
         if url.scheme in ('redis', 'rediss', 'hiredis'):
-            if url.password and lib != DJANGO_REDIS_CACHE_LIB_KEY and backend != BUILTIN_DJANGO_BACKEND:
+            if url.password and lib != DJANGO_REDIS_CACHE_LIB_KEY and backend != DJANGO_REDIS_BACKEND:
                 redis_options['PASSWORD'] = url.password
             # Specifying the database is optional, use db 0 if not specified.
             db = path[1:] or '0'
             port = url.port if url.port else 6379
             scheme = 'rediss' if url.scheme == 'rediss' else 'redis'
             config['LOCATION'] = f'{scheme}://{url.hostname}:{port}/{db}'
-            if url.password and (lib == DJANGO_REDIS_CACHE_LIB_KEY or backend == BUILTIN_DJANGO_BACKEND):
+            if url.password and (lib == DJANGO_REDIS_CACHE_LIB_KEY or backend == DJANGO_REDIS_BACKEND):
                 config['LOCATION'] = f'{scheme}://:{url.password}@{url.hostname}:{port}/{db}'
 
             if lib == DJANGO_REDIS_CACHE_LIB_KEY:
