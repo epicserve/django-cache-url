@@ -14,6 +14,25 @@ django-cache-url
    :target: https://github.com/epicserve/django-cache-url/actions
    :alt: Tests
 
+⚠️ Important Notice for Redis Users
+------------------------------------
+
+**If you only need Redis cache support**, Django 4.2+ now includes native Redis support via
+``django.core.cache.backends.redis.RedisCache``. For new projects using only Redis, we
+recommend using Django's built-in support instead of this library.
+
+**This project remains useful for:**
+
+- Supporting non-Redis cache backends (memcached, file, database, etc.)
+- Using URL-based cache configuration for any backend (12-factor app pattern)
+- Maintaining legacy projects already using django-cache-url
+- Projects that need multiple cache backend support with unified configuration
+
+**For Redis-only new projects**: See `Django's cache documentation <https://docs.djangoproject.com/en/stable/topics/cache/#redis>`_
+for native Redis setup.
+
+----
+
 This simple Django utility allows you to utilize the
 `12factor <http://www.12factor.net/backing-services>`_ inspired
 ``CACHE_URL`` environment variable to configure your Django application.
@@ -38,6 +57,32 @@ Defaults to local memory cache if ``CACHE_URL`` isn't set.
 Parse an arbitrary Cache URL::
 
     CACHES = {'default': django_cache_url.parse('memcache://...')}
+
+Migrating to Django's Native Redis Support
+-------------------------------------------
+
+If you're using this library only for Redis and want to migrate to Django's built-in Redis backend (Django 4.2+),
+here's how to transition:
+
+**Before** (using django-cache-url)::
+
+    import django_cache_url
+    import os
+
+    CACHES = {
+        'default': django_cache_url.config(default='redis://localhost:6379/1')
+    }
+
+**After** (using Django's native Redis backend)::
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': 'redis://127.0.0.1:6379/1',
+        }
+    }
+
+For more details, see the `Django Redis cache documentation <https://docs.djangoproject.com/en/stable/topics/cache/#redis>`_.
 
 Supported Caches
 ----------------
